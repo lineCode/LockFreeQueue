@@ -1,0 +1,1 @@
+g++ -o lockqueue main.cpp -lboost_system -lboost_date_time -lboost_thread -std=c++17
