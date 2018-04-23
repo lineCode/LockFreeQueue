@@ -16,7 +16,6 @@ const int iterations = 10000000;
 const int producer_thread_count = 1;
 const int consumer_thread_count = 4;
 
-
 void producer(void)
 {
     std::ofstream myfile;
@@ -30,7 +29,6 @@ void producer(void)
         ++producer_count;
         std::ostringstream stringStream;
         stringStream << "Log Number:" << i;
-        int first_die, sec_die;
         
         LogFiveG *value = new LogFiveG(rand() % (LOG_DEBUG + 1), stringStream.str());
 
