@@ -5,26 +5,14 @@
 
 #include <boost/atomic.hpp>
 #include <fstream>
-class LogFiveG {
-    public:
-        LogFiveG () = default;  
-        LogFiveG (std::string log) : theLog(log) {};  
-        LogFiveG(const LogFiveG&) = default;
-
-        ~LogFiveG() = default;
-
-        LogFiveG& operator=(const LogFiveG& obj)  = default;
-
-        std::string theLog;
-};
+#include "logFiveG.hh"
 
 boost::atomic_int producer_count(0);
 boost::atomic_int consumer_count(0);
 
 boost::lockfree::queue<LogFiveG*> queue(128);
 
-//const int iterations = 10000000;
-const int iterations = 10;
+const int iterations = 10000000;
 const int producer_thread_count = 1;
 const int consumer_thread_count = 4;
 
@@ -35,12 +23,18 @@ void producer(void)
     std::ostringstream stringStreamFile;
     stringStreamFile << "LogPush_" <<  boost::this_thread::get_id();
     myfile.open (stringStreamFile.str()); 
+    time_t seconds;
+    time(&seconds);
+    srand((unsigned int) seconds);
     for (int i = 0; i != iterations; ++i) {
         ++producer_count;
         std::ostringstream stringStream;
         stringStream << "Log Number:" << i;
-        LogFiveG *value = new LogFiveG(stringStream.str());
-        myfile << "Push: [" << value->theLog << "]" << std::endl;
+        int first_die, sec_die;
+        
+        LogFiveG *value = new LogFiveG(rand() % (LOG_DEBUG + 1), stringStream.str());
+
+        myfile << "Push:" << *value << std::endl;
         while (!queue.push(value));
     }
 }
@@ -57,7 +51,7 @@ void consumer(void)
     while (!done) {
         while (queue.pop(value)) 
         {
-            myfile << "Pop: [" << value->theLog << "]" << std::endl;
+            myfile << "Pop:" << *value << std::endl;
             delete value;
             ++consumer_count;
         }
@@ -65,7 +59,7 @@ void consumer(void)
 
     while (queue.pop(value))
     {
-        myfile << "**********************Last Pop: [" << value->theLog << "]" << std::endl;
+        myfile << "**********************Last Pop: " << *value << "]" << std::endl;
         delete value;
         ++consumer_count;
     }

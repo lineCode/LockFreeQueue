@@ -1,1 +1,1 @@
-g++ -o lockqueue main.cpp -lboost_system -lboost_date_time -lboost_thread -std=c++17
+g++ -o lockqueue logFiveG.cpp main.cpp -lboost_system -lboost_date_time -lboost_thread -std=c++17
